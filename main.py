@@ -120,17 +120,6 @@ elif args.mode == 'demo':
                 REA = get_entity(tag, demo_sent, 'PER')
                 print('PER: {}\nSEX: {}\nTIT: {}\nREA: {}'.format(PER, SEX, TIT, REA))
 
-                # E1 = get_entity(tag, demo_sent, '1通类')
-                # E2 = get_entity(tag, demo_sent, '2工程建设')
-                # E3 = get_entity(tag, demo_sent, '3工务')
-                # E4 = get_entity(tag, demo_sent, '4牵引动力')
-                # E5 = get_entity(tag, demo_sent, '5车辆')
-                # E6 = get_entity(tag, demo_sent, '6运输管理')
-                # E7 = get_entity(tag, demo_sent, '7通信')
-                # E8 = get_entity(tag, demo_sent, '8信号')
-                # print('1通类: {}\n2工程建设: {}\n3工务: {}\n4牵引动力: {}\n'
-                #       '5车辆: {}\n6运输管理: {}\n7通信: {}\n8信号: {}'.format(E1, E2, E3, E4, E5, E6, E7, E8))
-
 
 ## predict
 elif args.mode == "predict":
