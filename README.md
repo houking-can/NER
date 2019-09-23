@@ -1,7 +1,7 @@
 # A simple BiLSTM-CRF model for Chinese Named Entity Recognition
 
 
-### data
+## Data
 
 如果有人工标注的数据，或者想尝试一下使用词典标注的数据训练CRF，按照data目录下准备训练数据。
 
@@ -30,7 +30,7 @@
 
 
 
-### dependency
+## Dependency
 
 - tensorflow 1.2
 - python3
@@ -47,4 +47,4 @@ predict模式是针对大量需要做预测数据的情况
 
 [https://github.com/Determined22/zh-NER-TF](https://github.com/Determined22/zh-NER-TF)
 
-这个repo是基于上面这个项目进行修改，优化了部分代码。
+本repo是基于以上项目进行修改，优化了部分代码。
