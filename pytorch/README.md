@@ -1,8 +1,5 @@
 # NER
-tensorflow实体识别
-
 pytotch实体识别，更改向量，可适配中文和英文，支持以下模型：
-
 - LSTM
 - LSTM+char 
 - LSTM+CRF 

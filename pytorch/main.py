@@ -25,12 +25,12 @@ if __name__ == '__main__':
     parser.add_argument('--char_hidden_dim', type=int, default=50)
     parser.add_argument('--dropout', type=float, default=0.5)
     parser.add_argument('--pretrain_embed_path', default='data/tx-char-200d.txt')
-    parser.add_argument('--savedir', default='data/model/')
     parser.add_argument('--batch_size', type=int, default=128)
     parser.add_argument('--epochs', type=int, default=100)
     parser.add_argument('--optimizer', default='sgd')
     parser.add_argument('--lr', type=float, default=0.02)
     parser.add_argument('--feature_extractor', choices=['lstm', 'cnn'], default='lstm')
+    parser.add_argument('--output_path', type=str, default="output")
     parser.add_argument('--use_char', type=bool, default=False)
     parser.add_argument('--train_path', default='data/train.txt')
     parser.add_argument('--dev_path', default='data/dev.txt')
@@ -43,22 +43,11 @@ if __name__ == '__main__':
     use_gpu = torch.cuda.is_available()
     print('use_crf:', args.use_crf)
 
-    if not os.path.exists(args.savedir):
-        os.makedirs(args.savedir)
+    model_path = os.path.join(args.output_path, 'model')
+    if not os.path.exists(model_path):
+        os.makedirs(model_path)
 
-    eval_path = "evaluation"
-    eval_temp = os.path.join(eval_path, "temp")
-    eval_script = os.path.join(eval_path, "conlleval")
-
-    if not os.path.isfile(eval_script):
-        raise Exception('CoNLL evaluation script not found at "%s"' % eval_script)
-    if not os.path.exists(eval_temp):
-        os.makedirs(eval_temp)
-
-    pred_file = eval_temp + '/pred.txt'
-    score_file = eval_temp + '/score.txt'
-
-    model_name = args.savedir + '/' + args.feature_extractor + str(args.use_char) + str(args.use_crf)
+    model_name = os.path.join(model_path, args.feature_extractor + str(args.use_char) + str(args.use_crf))
     word_vocab = WordVocabulary(args.train_path, args.dev_path, args.test_path, args.number_normalized)
     label_vocab = LabelVocabulary(args.train_path)
     alphabet = Alphabet(args.train_path, args.dev_path, args.test_path)
@@ -91,7 +80,7 @@ if __name__ == '__main__':
     print()
     print()
 
-    writer = SummaryWriter('log')
+    writer = SummaryWriter(os.path.join(args.output_path, 'log'))
     batch_num = -1
     best_f1 = -1
     early_stop = 0
@@ -101,7 +90,8 @@ if __name__ == '__main__':
         print('train {}/{} epoch'.format(epoch + 1, args.epochs))
         optimizer = lr_decay(optimizer, epoch, 0.05, args.lr)
         batch_num = train_model(train_dataloader, model, optimizer, batch_num, writer, use_gpu)
-        new_f1 = evaluate(dev_dataloader, model, word_vocab, label_vocab, pred_file, score_file, eval_script, use_gpu)
+        new_f1 = evaluate(dev_dataloader, model, word_vocab, label_vocab, args.output_path, prefix='dev',
+                          use_gpu=use_gpu)
         print('f1 is {} at {}th epoch on dev set'.format(new_f1, epoch + 1))
         if new_f1 > best_f1:
             best_f1 = new_f1
@@ -132,5 +122,5 @@ if __name__ == '__main__':
     print('-' * 50)
 
     model.load_state_dict(torch.load(model_name))
-    test_acc = evaluate(test_dataloader, model, word_vocab, label_vocab, pred_file, score_file, eval_script, use_gpu)
-    print('test acc on test set:', test_acc)
+    test_f1 = evaluate(test_dataloader, model, word_vocab, label_vocab, args.output_path, use_gpu, prefix='test')
+    print('test f1 on test set:', test_f1)
